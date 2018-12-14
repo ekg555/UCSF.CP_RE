@@ -1,5 +1,11 @@
+# 
+# (txt files from PDF | directory)
+#  x/bin/txt_conversion/
+#  x/bin/images/
+#  x/bin/log_PDF2txt_2018-12-14.11AM
 # https://medium.com/@CharlesBordet/how-to-extract-and-clean-data-from-pdf-files-in-r-da11964e252e
 
+library(tictoc)
 library(tesseract)
 library(pdftools)
 library(stringr)
@@ -13,6 +19,7 @@ txtdir <- "C:/Users/ekonagaya/Desktop/CO_Signed/txt_conversion"
 setwd(PDFdir)
 bin <- file.path(PDFdir,"bin")
 log <- file.path(bin,"log")
+timestamp <- format(Sys.time(), "%Y-%m-%d.%HH%p")
 
 if (!dir.exists(bin)) { dir.create(bin) }
 if (!dir.exists(log)) { dir.create(log) }
@@ -49,8 +56,8 @@ for (i in 1:length(flist)) {
 
 #==============================================================
 
-write(imglist,paste0(file.path(bin,"img_pdf_list_by_pdfInfo.txt") ) )
-write(writeLines(unlist(tic.log(format=T))), paste0(file.path(log,"log
+write(imglist,paste0(file.path(bin,"img_pdf_list.txt") ) )
+write(writeLines(unlist(tic.log(format=T))), file.path(log, paste0("log_PDF2txt_",timestamp,".txt"))
 closeAllConnections()
 
 
