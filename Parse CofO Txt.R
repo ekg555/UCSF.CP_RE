@@ -13,14 +13,16 @@ library(stringr)
 
 # PATHS
 # ===================================================
-PDFdir <- "C:/Users/ekonagaya/Desktop/CO_Signed/"
+PDFdir <- "C:/Users/ekonagaya/Desktop/CO_Signed"
 txtdir <- "C:/Users/ekonagaya/Desktop/CO_Signed/txt_conversion"
 #-----------------------------------------------
 
 setwd(PDFdir)
 
 bin <- file.path(PDFdir,"bin")
+log <- file.path(bin,"log")
 if (!dir.exists(bin)) { dir.create(bin) }
+if (!dir.exists(log)) { dir.create(log) }
 
 setwd(txtdir)
 flist <- dir()
@@ -39,26 +41,28 @@ dat1 <- c()
 # c <- readLines(flist[1])
 # Filenom <- flist[i]
 
-# Load Sample "Difficult Cases"
-E1 <- "CofO M2629 HSE 8 Renovation 12-20-16.txt"	# Docusign Envelope ID: @ line-1
-E2 <- "CO - 07-428 Plaza Level Storage Room.txt"	# FuzzyScan
+# Load Sample "Tricky Cases"
+E1 <- "CofO M2629 HSE 8 Renovation 12-20-16.txt"		# Docusign Envelope ID: @ line-1
+E2 <- "CO - 07-428 Plaza Level Storage Room.txt"		# FuzzyScan
+E3 <- "CO - M0445 Student Housing Block 20_N,S,E,W.pdf" # Multi-page PDF
 
 
-#  SAVING TO FOLDER ( e.g. "CofO_PDF_Summary_12-14-2018.09_AM"
-#                                            or 'CofO_PDF_.../images/' )
+#  SAVING TO FOLDER ( e.g. "CofO_PDF_Summary_2018-12-14.13"
 # ----------------------------------------------------------------
-outname <- paste0("CofO_PDF_Summary_",format(Sys.time(), "%Y-%m-%d.%HH_%p"))
+outname <- paste0("CofO_PDF_Summary_",format(Sys.time(), "%Y-%m-%d.%H"))
 outtime <- sub(".*Summary_","",outname)
 outpath <-  file.path(bin,outname)
 
 if ( !dir.exists(outpath) ) {dir.create(outpath)}
-if ( !dir.exists(file.path(outpath,'images')) ) { dir.create(file.path(outpath, 'images')) }
 
-toc() #init "Parse CofO Txt.R"
+toc(log=TRUE) #init "Parse CofO Txt.R"
 # -----------------------------------------------------------
 
+tic("[txt>>table] OVERALL")
+
+
 for (i in 1:length(flist)) {
-	tic(paste0("Txt Parse: ",flist[i]))
+	tic(paste0("[txt>>table] ",flist[i]))
 	Filenom <- flist[i]
 	txt <- gsub("\\s+", " ", str_trim(readLines(flist[i])) )
 	# if DocuSign Envelope ID on TOP, Trim the top 
@@ -111,19 +115,14 @@ for (i in 1:length(flist)) {
 								  Filenom=Filenom 
 								)  ))
 								
-	toc()	# Txt Parse: [filename]
+	toc(log=TRUE)	# [txt>>table] [filename]:
 	#------------------------------------------------------------
 }
 
-# img move to bin/images
-# ==============================================================
-img_file <- paste0(gsub(".txt", "", Filenom),"_1.png")
-file.copy(file.path("..",img_file), file.path(outpath,'images',img_file))
-file.remove(img_file)
-
-closeAllConnections()
 }
+toc(log=TRUE) # PDF>>txt OVERALL	
 
+#==============================================================
 #   SAVE TABLE TO 'bin/CofO_PDF_Summary...'	
 # ============================================
 setwd(outpath)
@@ -131,11 +130,15 @@ setwd(outpath)
 table_name <- paste0(outname,".txt")
 write.table(dat1, table_name, 
 					sep="\t", row.names=FALSE)
+					
+write(unlist(tic.log(format=T)), 
+		file.path(log, paste0("log_txt2tab_",timestamp,".txt")) )
 
 closeAllConnections()
 
 setwd("..")
-zip(zipfile = paste0(gsub("\\..*","",outname),".zip"), files = outpath)
+files2zip <- dir(outpath,full.names=TRUE)
+zip(zipfile = paste0(gsub("\\..*","",outname),".zip"), files = files2zip)
 
 
 # dir(outtime)
