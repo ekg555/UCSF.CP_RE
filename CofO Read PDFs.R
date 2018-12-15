@@ -21,7 +21,7 @@ bin <- file.path(PDFdir,"bin")
 log <- file.path(bin,"log")
 imgdir <- file.path(bin,"images")
 
-timestamp <- format(Sys.time(), "%Y-%m-%d.%HH%p")
+timestamp <- format(Sys.time(), "%Y-%m-%d.%H")
 
 if (!dir.exists(bin)) { dir.create(bin) }
 if (!dir.exists(log)) { dir.create(log) }
@@ -74,7 +74,7 @@ toc(log=TRUE) # PDF>>txt OVERALL
 #==============================================================
 
 write(imglist,paste0(file.path(bin,"img_pdf_list.txt") ) )
-write(writeLines(unlist(tic.log(format=T))), file.path(log, paste0("log_PDF2txt_",timestamp,".txt"))
+write(unlist(tic.log(format=T)), file.path(log, paste0("log_PDF2txt_",timestamp,".txt")) )
 close(pb)
 closeAllConnections()
 
