@@ -2,10 +2,14 @@
 #=================================================================
 # https://stackoverflow.com/questions/21114598/importing-a-text-file-into-r
 
+Sys.setenv(PATH = paste("C:\\Rtools\\bin", Sys.getenv("PATH"), sep=";"))
+Sys.setenv(BINPREF = "C:\\Rtools\\mingw_$(WIN)\\bin\\")
+Sys.setenv(R_ZIPCMD= 'C:/Users/ekonagaya/Desktop/Rtools/bin/zip')
+
 library(tictoc)
 tic('initialize Parse CofO Txt.R')
 
-library(xlsx)
+
 library(plyr)
 library(tesseract)
 library(pdftools)
@@ -13,8 +17,8 @@ library(stringr)
 
 # PATHS
 # ===================================================
-# PDFdir <- "C:/Users/ekonagaya/Desktop/CO_Signed"
-PDFdir <- "C:/Users/Eugene/Desktop/CO_Signed"
+PDFdir <- "C:/Users/ekonagaya/Desktop/CO_Signed"
+# PDFdir <- "C:/Users/Eugene/Desktop/CO_Signed"
 #-----------------------------------------------
 
 setwd(PDFdir)
@@ -137,10 +141,16 @@ write(unlist(tic.log(format=T)), file.path(log, paste0("log_txt2tab_",timestamp,
 
 closeAllConnections()
 
-setwd("..")
+setwd(bin)
 files2zip <- c(outname,'img_pdf_list.txt', 'log', 'txt_conversion')
 zip(zipfile = paste0(gsub("\\..*","",outname),".zip"), files = files2zip)
+If (!dir.exists("Archive")) { dir.create("Archive") }
+file.copy( paste0(gsub("\\..*","",outname),".zip"), file.path(bin,"Archive") )
+file.remove( paste0(gsub("\\..*","",outname),".zip") )
 unlink(outname, recursive = T)
+
+setwd("Archive")
+shell.exec(dir(pattern=paste0(gsub("\\..*","",outname),".zip")))
 
 tic.clearlog()
 # dir(outtime)
