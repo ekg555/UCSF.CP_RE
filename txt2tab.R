@@ -17,7 +17,8 @@ library(stringr)
 
 # PATHS
 # ===================================================
-PDFdir <- "C:/Users/ekonagaya/Desktop/CO_Signed"
+PDFdir <- choose.dir(default="C:\\Users\\ekonagaya\\Desktop\\CO_Signed")
+# PDFdir <- "C:/Users/ekonagaya/Desktop/CO_Signed"
 # PDFdir <- "C:/Users/Eugene/Desktop/CO_Signed"
 #-----------------------------------------------
 
@@ -91,7 +92,7 @@ for (i in 1:length(flist)) {
                                agrep("Building Owner:", ignore.case=TRUE, txt, value=TRUE)[1] ))
     
     Campus <- str_trim(gsub(".*Campus/Facility:|Street Address?:.*", "", ignore.case = TRUE, 
-                            agrep("Campus:", ignore.case=TRUE, txt, value=TRUE)[1] ))
+                            agrep("Campus/Facility:", ignore.case=TRUE, txt, value=TRUE)[1] ))
     
     StAddress <- str_trim(gsub(".*Street Address?:", "", ignore.case = TRUE, 
                                agrep("Street Address:", ignore.case=TRUE, txt, value=TRUE)[1]  ))
@@ -144,7 +145,7 @@ closeAllConnections()
 setwd(bin)
 files2zip <- c(outname,'img_pdf_list.txt', 'log', 'txt_conversion')
 zip(zipfile = paste0(gsub("\\..*","",outname),".zip"), files = files2zip)
-If (!dir.exists("Archive")) { dir.create("Archive") }
+if (!dir.exists("Archive")) { dir.create("Archive") }
 file.copy( paste0(gsub("\\..*","",outname),".zip"), file.path(bin,"Archive") )
 file.remove( paste0(gsub("\\..*","",outname),".zip") )
 unlink(outname, recursive = T)
