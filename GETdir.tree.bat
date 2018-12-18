@@ -1,0 +1,1 @@
+dir /s /b /o:n /ad > dirtree.txt
