@@ -17,7 +17,7 @@ library(stringr)
 
 # PATHS
 # ===================================================
-PDFdir <- choose.dir(default="C:\\Users\\ekonagaya\\Desktop\\CO_Signed")
+PDFdir <- gsub('\\\\','/',choose.dir(default="C:/Users/ekonagaya/Desktop/CO_Signed"))
 # PDFdir <- "C:/Users/ekonagaya/Desktop/CO_Signed"
 # PDFdir <- "C:/Users/Eugene/Desktop/CO_Signed"
 #-----------------------------------------------
@@ -30,8 +30,17 @@ txtdir <- file.path(bin,"txt_conversion")
 if (!dir.exists(bin)) { dir.create(bin) }
 if (!dir.exists(log)) { dir.create(log) }
 
-setwd(txtdir)
+# =================================================
 flist <- dir()
+
+# by list: Issues
+# ------------------------------------
+# setwd('c:/Users/ekonagaya/Desktop/')
+# fnom <- readLines(dir(pattern='.csv'))
+# flist <- fnom[-1]
+#==================================================
+
+setwd(txtdir)
 dat1 <- c()
 
 # a sample Raster-PDF
@@ -81,29 +90,29 @@ for (i in 1:length(flist)) {
     dat1 <- rbind.fill(dat1, data.frame(ProjName, ProjNum, Filenom) )
   } else {
     
-    ProjName <- str_trim(gsub(".*Name?:|Project Number.*", "", ignore.case = TRUE, 
+    ProjName <- str_trim(gsub(".*Name?:|Project Number.*|ProjectNumber.*|P roject Number.*|Pr oject Number.*", "", ignore.case = TRUE, 
                               agrep("Project Name:", ignore.case=TRUE, txt, value=TRUE)[1] ))
-    ProjNum  <- str_trim(gsub(".*Project Number?:", "", ignore.case = TRUE, 
-                              agrep("Project Number:", ignore.case=TRUE, txt, value=TRUE)[1] ))
+    ProjNum  <- as.character(str_trim(gsub(".*Project Number?:|.*ProjectNumber?:|.*P roject Number?:|.*Pr oject Number?:", "", ignore.case = TRUE, 
+                              agrep("Project Number:", ignore.case=TRUE, txt, value=TRUE)[1] )) )
     
-    BldgName <- str_trim(gsub(".*Building Name?:|Building Owner.?:*", "", ignore.case = TRUE, 
+    BldgName <- str_trim(gsub(".*Building Name?:|Building Owner.?:*|Butiding Owner.?:*", "", ignore.case = TRUE, 
                               agrep("Building Name:", ignore.case=TRUE, txt, value=TRUE)[1] ))
-    BldgOwner <- str_trim(gsub(".*Building Owner", "", ignore.case = TRUE, 
+    BldgOwner <- str_trim(gsub(".*Building Owner|.*Butiding Owner", "", ignore.case = TRUE, 
                                agrep("Building Owner:", ignore.case=TRUE, txt, value=TRUE)[1] ))
     
-    Campus <- str_trim(gsub(".*Campus/Facility:|Street Address?:.*", "", ignore.case = TRUE, 
+    Campus <- str_trim(gsub(".*Campus/Facility:|Street Address?:.*|Sireet Address?:.*|otreet Address?:.*", "", ignore.case = TRUE, 
                             agrep("Campus/Facility:", ignore.case=TRUE, txt, value=TRUE)[1] ))
     
-    StAddress <- str_trim(gsub(".*Street Address?:", "", ignore.case = TRUE, 
+    StAddress <- str_trim(gsub(".*Street Address[ ]?:|.*sireet Address[ ]?:|.*otreet Address[ ]?:", "", ignore.case = TRUE, 
                                agrep("Street Address:", ignore.case=TRUE, txt, value=TRUE)[1]  ))
     
-    OccGrp <- str_trim(gsub(".*Occupancy Group?:|Type of Constr.*", "", ignore.case = TRUE, 
+    OccGrp <- str_trim(gsub(".*Occupancy Group[ ]?:?|Type of Constr.*", "", ignore.case = TRUE, 
                             agrep("Occupancy Group:", ignore.case=TRUE, txt, value=TRUE)[1]  ))
     ToC <- str_trim(gsub(".*Type of Construction?:", "", ignore.case = TRUE, 
                          agrep("Type of Construction:", ignore.case=TRUE, txt, value=TRUE)[1]  ))
     
     lnN <- agrep("The certificate is issued on:",txt)[1]
-    DateIssued <- str_trim(gsub(".*This certificate is issued on:", "", ignore.case = TRUE, txt[lnN]))
+    DateIssued <- str_trim(gsub(".*This certificate is issued on:|.*Fhis certificate is issued on:|.*This certificate ts issued on:", "", ignore.case = TRUE, txt[lnN]))
     
     if (any(agrepl("is issued pursuant to", txt))) {
       lnM <- agrep("is issued pursuant to", txt)[1]
@@ -114,7 +123,7 @@ for (i in 1:length(flist)) {
     DoOccS <- str_trim(gsub(".*Occupied Space?:","", paste(txt[9:lnM-1], collapse = " ")) )
     
     dat1 <- data.frame(rbind(dat1, 
-                             cbind( ProjName=ProjName,	ProjNum=ProjNum, 
+                             cbind( ProjName=ProjName,	ProjNum=as.character(ProjNum), 
                                     BldgName=BldgName,	BldgOwner=BldgOwner,
                                     Campus=Campus,		StAddress=StAddress,
                                     OccGrp=OccGrp,		ToC=ToC,
