@@ -12,7 +12,8 @@ library(stringr)
 
 # PATHS
 # ===================================================
-PDFdir <- "C:/Users/ekonagaya/Desktop/CO_Signed"
+# PDFdir <- "C:/Users/ekonagaya/Desktop/CO_Signed"
+  PDFdir <- choose.dir("C:/Users/ekonagaya/Desktop/CO_Signed")
 #-----------------------------------------------
 
 setwd(PDFdir)
