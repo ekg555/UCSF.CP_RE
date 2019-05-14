@@ -30,16 +30,21 @@ Filenom <- sub(".*\\\\", "", flist); head(Filenom); # FILENAME
 Pth <- sub("[^\\]+$","", flist); head(Pth,50); # PATH
 
 dat1 <- data.frame(Path=Pth, Filename=Filenom, stringsAsFactors=F)
-write.csv(dat1, paste0(outfile,'.csv'))
+dat1$AccPath <- gsub("#", "%23", dat1$Path)
+dat1$AccPath <- gsub("\\\\", "/", dat1$AccPath)
 
+dat1$AccName <- gsub("#", "%23", dat1$Filename)
+
+write.csv(dat1, paste0(outfile,'.csv'))
+shell.exec(paste0(outfile,'.csv'))
 
 
 # OPEN A RANDOM FILE (TEST)
 # set.seed(555)
 
-rng <- round(runif(1, min=1, max=nrow(dat1)),0)
+# rng <- round(runif(1, min=1, max=nrow(dat1)),0)
 
-print(paste("OPENING FILE: ", dat1[rng,]$Filename)); 	# PROOF OF CONCEPT:
-print(rng); shell.exec(paste0(dat1[rng,]$Path,dat1[rng,]$Filename)) #   OPEN A RANDOM FILE on the 'FLIST'
+# print(paste("OPENING FILE: ", dat1[rng,]$Filename)); 	# PROOF OF CONCEPT:
+# print(rng); shell.exec(paste0(dat1[rng,]$Path,dat1[rng,]$Filename)) #   OPEN A RANDOM FILE on the 'FLIST'
 
 
