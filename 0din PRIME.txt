@@ -1,0 +1,6 @@
+WHERE (	((PRLog.[Building Name]) Is Not Null)
+		AND (	(PRLog.[Construction Type]) Like "[0-9]*" 
+				And (PRLog.[Construction Type]) <>"1-B" 
+				And (PRLog.[Construction Type])=[PRLog].[Number Levels])
+		AND ((PRLog.[Occupancy Classification])=[PRLog].[Number Levels])
+		AND ((PRLog.[Building Name])=(PRLog.[Construction Type])) );
