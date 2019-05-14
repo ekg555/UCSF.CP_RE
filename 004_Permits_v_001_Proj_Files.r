@@ -1,3 +1,6 @@
+# This was for Finding files that weren't in 004, 
+# but was in the 001.
+#
 dsktp <- 'c:/Users/ekonagaya/Desktop'
 
 setwd(dsktp)
