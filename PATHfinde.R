@@ -1,4 +1,14 @@
-#
+# ============================================================================
+#   PATHfinde.R
+# ----------------------------------------------------------------------------
+#   - Asks where to Look
+#   - Digs into all subdirs of wherever directed (and builds a MANIFEST of .pdf files
+#   OUTPUT:
+#   - writes to a timestamped 'PATHs...csv' 
+#   + EZ COPY into MS ACCESS
+#   ** PAIR w/ "EK UPDATE LINKS" to auto-link
+# ============================================================================
+
 rm(list=ls())
 
 library(tictoc)
