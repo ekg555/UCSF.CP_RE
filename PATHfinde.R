@@ -6,7 +6,11 @@
 #   OUTPUT:
 #   - writes to a timestamped 'PATHs...csv' 
 #   + EZ COPY into MS ACCESS
-#   ** PAIR w/ "EK UPDATE LINKS" to auto-link
+#   **1 ADD A Field called LINK (type=hyperlink)
+#   **2 Rename the Table to "Table1"
+#   **3 Run "EK UPDATE LINKS" to auto-link
+#
+#   NOTE: 'escapes' # symbols for Access
 # ============================================================================
 
 rm(list=ls())
