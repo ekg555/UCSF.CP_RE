@@ -1,0 +1,3 @@
+SELECT PRLog.[Seq ID], PRLog.[Major Project #], PRLog.ProjectName, PRLog.[Type of Dwgs], PRLog.[Permit Number], PRLog.[Permit Date] AS [PRLOG_PMT-DT], PTable.[Permit #], PTable.FILENAME, PTable.[PERMIT DATE], PTable.NOTES AS PT_NOTES
+FROM [Plan Review Log 5-6] AS PRLog LEFT JOIN [COMPILED PERMIT DATES] AS PTable ON PRLog.[Permit Number] = PTable.[Permit #]
+WHERE (((PRLog.[Permit Date])<>[PTable].[PERMIT DATE]));
