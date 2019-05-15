@@ -53,9 +53,9 @@ FullPath <- gsub("#", "%23", FullPath)
 Path <- str_extract(pattern=avantSLSH,string=FullPath)
 Filenom <- str_extract(pattern=apresSLSH,string=FullPath)
 
-# MS_Access-friendly SLASHES
-#AccPath <- gsub("/", "\\\\", Path)
-#AccFnom <- gsub("/", "\\\\", Filenom)
+# MS_Excel-friendly SLASHES
+#xlPath <- gsub("/", "\\\\", Path)
+#xlFnom <- gsub("/", "\\\\", Filenom)
 
 
 # FOR NOW... Just gather info for MS ACCESS
