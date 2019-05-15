@@ -13,6 +13,7 @@ rm(list=ls())
 
 library(tictoc)
 library(readxl)
+library(stringr)
 
 dsktp <- 'c:/users/ekonagaya/desktop'
 projdir <- 'p:'
@@ -32,13 +33,12 @@ setwd(selDir)
 
 # RegEx-es (EDIT if you DARE)
 # ============================================================================
-apresSLSH <- "([^/]+)$"
-avantSLSH <- "(^.*([/]+))"
+ apresSLSH <- "([^/]+)$"
+ avantSLSH <- "(^.*([/]+))"
 # ============================================================================
 
-
 # tic('Getting List')	# START time w/ tictoc
-FullPath <- sub(".", getwd(),
+FullPath <- sub(".", sub("([/]+)$", "", getwd()),
 					list.files(pattern="\\.pdf$", 
 						 recursive=T, 
 						 full.names=T,
@@ -48,12 +48,14 @@ FullPath <- sub(".", getwd(),
 				)
 
 
+
+
 Path <- str_extract(pattern=avantSLSH,string=FullPath)
 Filenom <- str_extract(pattern=apresSLSH,string=FullPath)
 
-
-dat1$AccPath <- gsub("/", "\\\\", Path)
-dat1$AccFnom <- gsub("/", "\\\\", Filenom)
+# MS_Access-friendly SLASHES
+AccPath <- gsub("/", "\\\\", Path)
+AccFnom <- gsub("/", "\\\\", Filenom)
 
 
 # FOR NOW... Just gather info for MS ACCESS
