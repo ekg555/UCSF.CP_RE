@@ -47,20 +47,20 @@ FullPath <- sub(".", sub("([/]+)$", "", getwd()),
 						 no.. = T)
 				)
 
-
-
+# Replace "#" signs (for Access)
+FullPath <- gsub("#", "%23", FullPath)
 
 Path <- str_extract(pattern=avantSLSH,string=FullPath)
 Filenom <- str_extract(pattern=apresSLSH,string=FullPath)
 
 # MS_Access-friendly SLASHES
-AccPath <- gsub("/", "\\\\", Path)
-AccFnom <- gsub("/", "\\\\", Filenom)
+#AccPath <- gsub("/", "\\\\", Path)
+#AccFnom <- gsub("/", "\\\\", Filenom)
 
 
 # FOR NOW... Just gather info for MS ACCESS
 dat1 <- data.frame(# FULLPATH=FullPath, 
-				   PATH=AccPath, FILENAME=AccFnom)
+				   PATH=Path, FILENAME=Filenom)
 # toc()					# END time w/ tictoc
 
 write.csv( dat1, file.path(dsktp,paste0(outfile, ".csv")), row.names=F )
