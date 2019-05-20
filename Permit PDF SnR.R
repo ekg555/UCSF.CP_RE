@@ -4,7 +4,8 @@ library(readxl)
 library(stringr)
 dsktp <- 'c:/users/ekonagaya/desktop'
 
-
+ timestp <- format(Sys.time(), "%Y-%m-%d.%H") # Time Stamp as Ousual
+ 
 setwd(dsktp)
 PATHs <- readLines('The_Lost_Permits.txt')
 PNums <- trimws(gsub("\\", "", unlist(str_extract_all(string=PATHs, pattern="([\\\\])I[0-9]{3,}[[:space:]]",simplify=T)), fixed=T))
@@ -21,4 +22,4 @@ paste0(MIA, collapse="|")
  
 MIA <- setdiff(PNums, PDATES$"PERMIT .") 	# The MIA PERMITS (MAY or MAY NOT Be SIGNED)
 nrow(dat1[which(dat1$PNums %in% MIA),]) # n= 60 files w/ MIA-Permit#s
-write.csv(dat1[which(dat1$PNums %in% MIA),], 'MIA-PERMITS_
+write.csv(dat1[which(dat1$PNums %in% MIA),], paste0('MIA-PERMITS_',timestp,'.csv'))
