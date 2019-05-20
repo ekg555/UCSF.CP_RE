@@ -1,0 +1,2 @@
+  SELECT PRLog.[Seq ID], PRLog.LoginDate, PRLog.[Construct Start], PRLog.[Construct Finish], PRLog.[Review Completion Date], PRLog.[Review Started], PRLog.[Review Due Date], PRLog.[100%CD Date], PRLog.[Permit Date], PRLog.[CO Date], PRLog.[TCO Date], PRLog.[CO Due Date], PRLog.[Drawings Received], PRLog.[Pre-Const Date], [PRLog].[Major Project #] & " " & [ProjectName] & " -- " & [Type of Dwgs] & " (" & [Status] & ": " & [Review Completion Date] & ")" AS REVIEW
+FROM [Plan Review Log 5-6] AS PRLog;
