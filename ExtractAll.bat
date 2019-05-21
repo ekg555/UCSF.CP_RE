@@ -21,6 +21,7 @@ forfiles /m *.zip /c "cmd /c PowerShell Expand-Archive -Force -Path @path -Desti
 cd %destpath%
 
 :REPLACE ("_" -> " ") & (".xls" -> "")
+: ----------------------------------------------------
 @echo off
 Setlocal enabledelayedexpansion
 
@@ -40,7 +41,7 @@ For %%a in (*.pdf) Do (
     Ren "%%a" "!File:%Pattern%=%Replace%!"
 )
 @echo on
-
+: -----------------------------------------------------
 del Summary.pdf
 
 : get list of files (.pdf MINUS "Summary.pdf")
