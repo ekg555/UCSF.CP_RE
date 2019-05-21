@@ -13,13 +13,17 @@ library(readxl)
 library(stringr)
 library(dplyr)
 library(lettercase)
-desktp <- 'c:/Users/ekonagaya/Desktop'
-txtdir <- "C:/Users/ekonagaya/Desktop/Permits CompileR/work involved/Permits_Review/bin/txt_conversion"
-pmtsdir <- choose.dir("u:\\Construction Permits Issued")
+dsktp <- 'c:/Users/ekonagaya/Desktop'
+PDFdir <- choose.dir("u:\\Construction Permits Issued")
+PDFdir <- gsub("\\\\", "/", PDFdir)
+wkdir <- file.path(PDFdir, 'PDF2TXT')
+bin <- file.path(wkdir,"bin")
+txtdir <- file.path(bin,"txt_conversion")
+# txtdir <- "C:/Users/ekonagaya/Desktop/Permits CompileR/work involved/Permits_Review/bin/txt_conversion"
 
-setwd(desktp)
+
+setwd(dsktp)
 # x <- readLines('I1084 W46074 PHTS MSB S1076 Freezer.txt')
-
 
 mos <- paste0('[',paste0(month.abb, collapse="|"),']')
 
@@ -120,7 +124,7 @@ for (i in 1:length(flist)) {
 	}
 }
 
-setwd(desktp)
+setwd(dsktp)
 write.csv(constDts, 'ConstructDates.csv')
 Sys.sleep(1)	# pause a sec...(literally)
 shell.exec('ConstructDates.csv')
