@@ -15,7 +15,8 @@ library(dplyr)
 library(lettercase)
 desktp <- 'c:/Users/ekonagaya/Desktop'
 txtdir <- "C:/Users/ekonagaya/Desktop/Permits CompileR/work involved/Permits_Review/bin/txt_conversion"
-pmtsdir <- 'u:/Construction Permits Issued'
+pmtsdir <- choose.dir("u:\\Construction Permits Issued")
+
 setwd(desktp)
 # x <- readLines('I1084 W46074 PHTS MSB S1076 Freezer.txt')
 
@@ -130,7 +131,7 @@ shell.exec('ConstructDates.csv')
 # OKAY... the PUNCTUATION OR NOT IS GETTING RIDDICK...
 # - for now, doing away w/ them altogether unless this causes NON-'SPECIFICITY' issues.
 # - DELETING, CAUSED MAJOR ISSUES w/ extracting the most common format.
-# - try replacing w/ " " instead.
+# - replacing w/ " " worked.
 
 # c <- unlist(strsplit(b ,split=' '))
 
