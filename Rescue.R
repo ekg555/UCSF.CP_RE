@@ -1,6 +1,6 @@
 #	Rescue.R
 # ========================================================================
-#   Sister Script of Searche.R
+#   Sister Script of Permit PDF SnR.R
 # ------------------------------------------------------------------------
 # After doing any pre-processing to the PATH & Dates sheet...
 # COPY ALL PATHS of FILES to RESCUE in CLIPBOARD...then
