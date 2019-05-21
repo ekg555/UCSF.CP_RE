@@ -1,93 +1,144 @@
-# 
-# (txt files from PDF | directory)
-#  x/bin/txt_conversion/
-#  x/bin/images/
-#  x/bin/log_PDF2txt_2018-12-14.11AM
-# https://medium.com/@CharlesBordet/how-to-extract-and-clean-data-from-pdf-files-in-r-da11964e252e
+#
+#  CHECK Construction TimeLine.R
+#   Reads through Building Permit Applications in "\\som.uscf.edu...\\004 Permits"
+#   Grabs Construction Start Date & Finish Dates
+#	ISSUES: 
+#   - some permits have 
+#
+# =====================================================================================================================
 
-library(tictoc)
-library(tesseract)
-library(pdftools)
+rm(list=ls())
+
+library(readxl)
 library(stringr)
-
-# PATHS
-# ===================================================
-# PDFdir <- "C:/Users/ekonagaya/Desktop/CO_Signed"
-  dsktp <- 'c:/users/ekonagaya/desktop'
-  wkdir <- file.path(dsktp, 'PDF2TXT')
-  PDFdir <- gsub('\\\\','/',choose.dir(default="C:\\Users\\ekonagaya\\Desktop"))
-#-----------------------------------------------
-
-setwd(PDFdir)
+library(dplyr)
+library(lettercase)
+dsktp <- 'c:/Users/ekonagaya/Desktop'
+PDFdir <- choose.dir("u:\\Construction Permits Issued")
+PDFdir <- gsub("\\\\", "/", PDFdir)
+wkdir <- file.path(PDFdir, 'PDF2TXT')
 bin <- file.path(wkdir,"bin")
-log <- file.path(bin,"log")
-imgdir <- file.path(bin,"images")
 txtdir <- file.path(bin,"txt_conversion")
-timestamp <- format(Sys.time(), "%Y-%m-%d.%H")
-ReRd <- FALSE # Set this to TRUE to Re-read previously read PDFs.
+# txtdir <- "C:/Users/ekonagaya/Desktop/Permits CompileR/work involved/Permits_Review/bin/txt_conversion"
 
 
-if (!dir.exists(wkdir)) { dir.create(wkdir) }
-if (!dir.exists(bin)) { dir.create(bin) }
-if (!dir.exists(log)) { dir.create(log) }
-if (!dir.exists(imgdir)) { dir.create(imgdir) }
-if (!dir.exists(txtdir)) { dir.create(txtdir) }
+setwd(dsktp)
+# x <- readLines('I1084 W46074 PHTS MSB S1076 Freezer.txt')
 
-flist <- dir(pattern="\\.pdf$")
-imglist <- c()
-tic("[PDF>>txt] OVERALL")
+mos <- paste0('[',paste0(month.abb, collapse="|"),']')
 
-# Try to Read PDF-meta-data/OCR (for each PDF-file)
-#==============================================================
-# pb <- winProgressBar(label="Reading PDFs", title = "Converting PDFs to txt: progress bar", 
-                     # min = 0, max = length(flist), width = 300)
-total <- length(flist)
+setwd(txtdir)
+# flist  <- list.files()
+flist <- 
+	list.files() %>% .[grep(".txt$",.)]
 
-for (i in 1:length(flist)) {
-  
-  tic(paste0("[PDF>>txt] ", flist[i])) # timing PDF>>txt
-  #---------------------------------------------------
-  
-  fname <- sub("\\.pdf","",flist[i]); fname
-  
-  # IF Already a .txt file w/ identical name as PDF in txtdir
-  if (!ReRd && (fname %in% gsub(".txt","",dir(txtdir))) ) {	
-			cat(paste0('SKIPPING, previously read ','(',i,' of ',total,'): ', fname))
-  } else {
-  # Subset "Images" based off size of .txt conversion
-  # check if Image-PDF: If the "Producer" of PDF-meta-data contains ("Xerox" or "WorkCentre") >> Add to 'imglist'
-  # =======================================================
-  if ( !(agrepl("Xerox", pdf_info(flist[i])$keys$Producer) | agrepl("WorkCentre", pdf_info(flist[i])$keys$Producer)) ) {
-    text <- pdf_text(flist[i])		# read: vector-PDF
-    closeAllConnections()			# close-connection
-  } else {
-    imglist <- c(imglist, flist[i])	# Add to list of Imagepdfs
-    text <- ocr(flist[i])			# read: image-PDF
-    
-    imgs <- agrep(fname,dir(pattern=".*.png"),value=T)
-    
-    for (j in 1:length(imgs)) {
-      file.copy(imgs[j],file.path(imgdir,imgs[j]))
-      file.remove(imgs[j])
-    }
-    closeAllConnections()			# close-connection
-  }
-  write(text,file.path(txtdir,paste0(fname, '.txt')))		
-  toc(log=TRUE)	# [PDF>>txt] [filename]
-  # setWinProgressBar(pb, i, title=paste0( "( ",i," of ",total," ) ", "done"))
-  #------------------------------------------------------
-  }
+# CnstDt <- data.frame(start=as.Date(character()), finish=as.Date(character()))
+DateLst <- c()
+InvalidDts <- data.frame(filename=character(), InvalDate=as.Date(character(0)))
+
+numDt <- '[0-9]{1,}[/-][0-9]{1,}[/-][0-9]{2,}'
+
+# This will allow as.Date() to just classify bad-dates e.g. 11/31 as NA & move on.
+ValidDt <- function(b) {tryCatch( { sapply(unlist(str_extract_all(b,longDt)), as.Date, optional=T, tryFormats= c("%b %d %Y", "%b%Y") ) },
+		warning= function(w) { },
+		error= function(e) {
+			'Invalid Date'}
+			)}
+
+longDt <- "[ADFJMNOSadfjmnos]([a-z]){2,8}[:space:]{1,}[0-9]{1,}([:space:]){0,}[12][0-9]{3}" # NO COMMAS/PERIODS allowed
+# longDt <- "[ADFJMNOSadfjmnos]([a-z]){2,8}[:space:]{1,}[0-9]{1,}[\\,]([:space:]){0,}[12][0-9]{3}" # w/ Comma
+
+# MODIFYING/"IRONING-OUT" b ("the line w/ dates") to prevent 'Jamming' 
+# ================================================================================
+CleanMos <- function(strng) {
+		# LOCATE Find one-off non-3-letter abbrev. Nor spelled-out examples (e.g. "Sept", ["July", "June" - any takers?])
+		if ( length(unlist(str_locate_all(strng, "Sept"))) > 0 ) { 
+			strng <- gsub(str_extract(strng,"Sept"), "Sep", strng)
+		}
+		# 'SEPEMBER', (agrep didn't pick this up) ad-hoc fixing for now...
+		if ( length(unlist(str_locate_all(strng, "Sepember"))) > 0 ) { 
+			strng <- gsub(str_extract(strng,"Sepember"), "Sep", strng)
+		}
+		if ( length(unlist(str_extract_all(strng, "[0-9]{1,}-[0-9]{1,}-[12][0-9]{1,}"))) > 0 ) {
+			for (Dt in unlist(str_extract_all(strng, "[0-9]{1,}-[0-9]{1,}-[12][0-9]{1,}")) ) {
+				strng <- sub(Dt, format(as.Date(Dt, "%m-%d-%Y"),"%m/%d/%Y" ), strng)
+				}
+		}
+		strng <- str_squish(gsub("[,.]"," ", strng))
+		strng <- paste(str_cap_words(str_lowercase(unlist(str_split(strng, " ")))), collapse=" ")
+		# ================================================================================
+		# REINTERPRET DATES (Jan 01, 2049 | January 01, 2049 >> 01/01/2049
+		return(strng)
 }
 
-toc(log=TRUE) # PDF>>txt OVERALL	
+# TEST CASES
+b0 <- '1/1/2019 		12/31/2019'
+b1 <- 'Sepember 31, 2018 		October 30, 2019'
+b2 <- '1/20/2019 				June 20, 2019'
+b3 <- 'Jan 20, 2049				6/30/2050'
 
-#==============================================================
+b4 <- 'Feb. 20, 2049   Feb. 20 2050'
+b5 <- 'May 20, 1945    Sept 1 1945'
+b6 <- 'MARCH 24, 2090 MARCH 30, 2100'
 
-write(imglist,paste0(file.path(bin,"img_pdf_list.txt") ) )
-write(unlist(tic.log(format=T)), file.path(log, paste0("log_PDF2txt_",timestamp,".txt")) )
-# close(pb)
-tic.clearlog()
-closeAllConnections()
+for (fl in flist) { 
+
+txt <- str_squish(readLines(fl))
+a <- agrep('Construct. Start Date',txt)
+b <- str_squish(txt[a+1])
+
+b <- CleanMos(b)
+
+	## IF have TWO NUMERIC DATES... SKIP to end
+	if (length(grep(numDt, unlist(str_split(b, " ")))) == 2) {
+		c0 <- unlist(strsplit(b ,split=' '))
+		x <- grep(numDt, c0, value=T)
+		DateLst <- c(DateLst, list(x)) 
+	
+	## Otherwise, if there are NO VALID DATES...'NA NA'
+	} else if (length(ValidDt(b)) == 0) { 
+		DateLst <- c(DateLst, list(c("NA", "NA")))
+	} else {
+	# ===============================================
+	# - grab any numDts (11/11/11), 
+	# - 
+		c0 <- c(unlist(na.omit(str_extract(b, numDt))))
+		c0 <- c(c0, unname(format(as.Date(ValidDt(b), origin='1970-01-01'), "%m/%d/%Y")))
+		DateLst <- c(DateLst, list(c0))
+	}
+	rm(list=c('a','b','c0'))
+}
+
+constDts <- data.frame(file=character(), start=character(), finish=character(),
+						stringsAsFactors=F)
+
+
+# COMPILE WHAT was gathered in DateLst (a 'list') to constDts (a 'dataframe' - stricter rules)
+for (i in 1:length(flist)) {
+	if (length(DateLst[[i]]) == 2) {
+		constDts <- rbind(constDts, c(file=flist[i], start=DateLst[[i]][1], finish=DateLst[[i]][2]), stringsAsFactors=F)
+	} else if (length(DateLst[[i]]) == 1) {
+		constDts <- rbind(constDts, c(file=flist[i], start='NA', 			finish=DateLst[[i]][1]), stringsAsFactors=F)
+	} else {
+		constDts <- rbind(constDts, c(file=flist[i], start='NA', 			finish='NA'), stringsAsFactors=F ) 
+	}
+}
+
+setwd(dsktp)
+write.csv(constDts, 'ConstructDates.csv')
+Sys.sleep(1)	# pause a sec...(literally)
+shell.exec('ConstructDates.csv')
+
+
+
+
+# OKAY... the PUNCTUATION OR NOT IS GETTING RIDDICK...
+# - for now, doing away w/ them altogether unless this causes NON-'SPECIFICITY' issues.
+# - DELETING, CAUSED MAJOR ISSUES w/ extracting the most common format.
+# - replacing w/ " " worked.
+
+# c <- unlist(strsplit(b ,split=' '))
+
 
 
 
