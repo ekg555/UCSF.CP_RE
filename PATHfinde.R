@@ -1,3 +1,10 @@
+
+Skip to content
+ekg555 / UCSF.CP_RE
+Code Issues 0 Pull requests 0 Projects 0 Wiki Pulse Community
+UCSF.CP_RE/PATHfinde.R
+@ekg555 ekg555 Update PATHfinde.R f444bdb 2 minutes ago
+96 lines (74 sloc) 2.92 KB
 # ============================================================================
 #   PATHfinde.R
 # ----------------------------------------------------------------------------
@@ -47,6 +54,9 @@ selDir <- gsub("\\\\", "/", choose.dir("u:\\Construction Permits Issued\\"))
 
 setwd(selDir)
 
+# ============================================================================
+#	CREATE The MANIFEST  (w/ R.base::list.files() - this is SLOW!)
+# ============================================================================
 # tic('Getting List')	# START time w/ tictoc
 # FullPath <- sub(".", sub("([/]+)$", "", getwd()),
 					# list.files(pattern="\\.pdf$", 
@@ -56,9 +66,8 @@ setwd(selDir)
 						 # include.dirs=T,
 						 # no.. = T)
 				# )
-
-
-#  CREATE THE MANIFEST (Win10)
+# ============================================================================
+#  CREATE The MANIFEST (Win10)
 # ============================================================================
 system("cmd", intern=T, 
 		ignore.stdout=F, 
@@ -92,4 +101,18 @@ dat1 <- data.frame(# FULLPATH=FullPath,
 write.csv( dat1, file.path(dsktp,paste0(outfile, ".csv")), row.names=F )
 shell.exec( file.path(dsktp,paste0(outfile, ".csv")) )
 
+
+    © 2019 GitHub, Inc.
+    Terms
+    Privacy
+    Security
+    Status
+    Help
+
+    Contact GitHub
+    Pricing
+    API
+    Training
+    Blog
+    About
 
