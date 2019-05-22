@@ -1,10 +1,3 @@
-
-Skip to content
-ekg555 / UCSF.CP_RE
-Code Issues 0 Pull requests 0 Projects 0 Wiki Pulse Community
-UCSF.CP_RE/PATHfinde.R
-@ekg555 ekg555 Update PATHfinde.R f444bdb 2 minutes ago
-96 lines (74 sloc) 2.92 KB
 # ============================================================================
 #   PATHfinde.R
 # ----------------------------------------------------------------------------
@@ -26,6 +19,8 @@ library(tictoc)
 library(readxl)
 library(stringr)
 
+ timestp <- format(Sys.time(), "%Y-%m-%d.%H") # Time Stamp as Usual
+
 dsktp <- 'c:/users/ekonagaya/desktop'
 projdir <- 'p:'
 dubsev <- 'q:'
@@ -33,14 +28,12 @@ prmtsdir <- 'u:'
 # ------------------------------------------======
 wkdir <- file.path(dsktp, 'PATH2LINK')
 bindir <- file.path(wkdir, 'bin')
+Manif <- paste0("Manifest_", timestp)
+outfile <- paste0('PATHs_', timestp)
 # ------------------------------------------======
 if (!dir.exists(wkdir)) { dir.create(wkdir) }
 if (!dir.exists(bindir)) { dir.create(bindir) }
 # ------------------------------------------======
-
- timestp <- format(Sys.time(), "%Y-%m-%d.%H") # Time Stamp as Ousual
-
-outfile <- paste0('PATHs_', timestp)
 
 # RegEx-es (EDIT if you DARE)
 # ============================================================================
@@ -100,19 +93,3 @@ dat1 <- data.frame(# FULLPATH=FullPath,
 
 write.csv( dat1, file.path(dsktp,paste0(outfile, ".csv")), row.names=F )
 shell.exec( file.path(dsktp,paste0(outfile, ".csv")) )
-
-
-    © 2019 GitHub, Inc.
-    Terms
-    Privacy
-    Security
-    Status
-    Help
-
-    Contact GitHub
-    Pricing
-    API
-    Training
-    Blog
-    About
-
