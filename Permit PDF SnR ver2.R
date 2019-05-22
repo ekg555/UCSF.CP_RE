@@ -7,6 +7,8 @@ dsktp <- 'c:/users/ekonagaya/desktop'
 # ----------------------------------------------------------------------------
 wkdir <- dsktp
 srcdir <- 'p:'
+pmtsdir <- 'u:/Construction Permits Issued'
+cofodir <- 'r:/CO_Signed'
 
 # ============================================================================
 #	SET The RegEx-es to detect files - IF YOU DARE!
@@ -54,7 +56,7 @@ setwd(wkdir)
 shell.exec('PDF_Manifest.txt')
 
 
-# =====================================================r=======================		
+# ============================================================================		
 # FILTER OUT based on TYPE.
 # ----------------------------------------------------------------------------
 #	- The "PROPER ALT"s were too specific
@@ -70,16 +72,27 @@ CofO.Manifest <- grep(regex.CofO, PDF.Manifest, val=T)
 
 
 # ============================================================================		
-#  For PERMITS: Get PATHS
+#  For PERMITS: PATHS   vs.   004 Permits
 # ============================================================================		
 PATHs <- PERMIT.Manifest
-PNums <- trimws(gsub("/", "", unlist(str_extract_all(string=PATHs, pattern="([/])I[0-9]{3,}[[:space:]]",simplify=T)), fixed=T))
-# ----------------------------------------------------------------------------	
-dat1 <- data.frame(PATHs, PNums, stringsAsFactors=F)
-PDATES <- read_excel('COMPILED PERMIT DATES 05-20.xlsx')
+PNums <- trimws(gsub("/", "", unlist(str_extract_all(string=PATHs, pattern="I[0-9]{3,}(?=([[:space:]]|))",simplify=T)), fixed=T))[,1]
+# ----------------------------------------------------------------------------		
+dat1 <- data.frame(PATHs, PNums, stringsAsFactors=F)	# 661 x 2 mtx.
 
-In_PERMITS <- setdiff(PDATES$"PERMIT .", PNums)	
-MIA <- setdiff(PNums, PDATES$"PERMIT .")			# MIA: Permit# in 001, but Not in 004
+# PDATES <- read_excel('COMPILED PERMIT DATES 05-20.xlsx')
+setwd(pmtsdir)
+Pmts <- list.files(pattern="\\.pdf$")
+PNs <- str_extract(Pmts, "I[0-9]{3,}(?=([[:space:]]|))")
+# ----------------------------------------------------------------------------		
+vier <- data.frame(Pmts, PNs, stringsAsFactors=F)	# 761 x 2 mtx.
+
+
+In_PERMITS <- setdiff(vier$PNs, dat1$PNums); length(In_PERMITS)		# n = 264
+MIA <- setdiff(dat1$PNums, vier$PNs); length(MIA)					# MIA: Permit# in 001, but Not in 004 (n = 49)
+
+write.csv(dat1[which(dat1$PNums %in% MIA),], 'asdfasdfasdf.csv')
+shell.exec('asdfasdfasdf.csv')
+
 
 paste0(MIA, collapse="|")
  grep(paste0("[",paste0(MIA, collapse="|"),"]"), PATHs, val=T)
