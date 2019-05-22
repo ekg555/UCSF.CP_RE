@@ -9,7 +9,7 @@ wkdir <- dsktp
 srcdir <- 'p:'
 
 # ============================================================================
-#	SET The RegEx-es to detect files.
+#	SET The RegEx-es to detect files - IF YOU DARE!
 # ----------------------------------------------------------------------------
 #	- The "PROPER ALT"s were too specific
 #   - These may be too sensitive [i.e., NEED to check for FALSE(+)s]
@@ -19,6 +19,15 @@ regex.HundCD <- '100.*CD'					# THE "PROPER ALT": '100[[:space:]]{0,}%?[[:space:
 regex.CofO   <- "/CofO|/CO[[:space:]]+-"	# Using the Proper regex. Seems OK & a "Floating CO" catches "Change Orders"
 
 	# regex.HundCD: caught a "100percent_CD" / likely to be too non-specific.
+
+
+			# ----------------------------------------------------=====
+			#	USE THIS to TEST REGEXes
+			# ----------------------------------------------------=====
+			# see <- function(rx) str_view_all(CofO.Manifest, rx)
+			# see("/CofO|/CO[[:space:]]+-")
+
+
 
 # ============================================================================
 #  CREATE The MANIFEST (Win10)
@@ -47,6 +56,9 @@ shell.exec('PDF_Manifest.txt')
 
 # ============================================================================		
 # FILTER OUT based on TYPE.
+# ----------------------------------------------------------------------------
+#	- The "PROPER ALT"s were too specific
+#   - These may be too sensitive [i.e., NEED to check for FALSE(+)s]
 # ============================================================================		
 FULL.Manifest <- readLines('FULL_Manifest.txt')
 PDF.Manifest <- gsub("\\\\", "/", grep("\\.pdf$", FULL.Manifest, val=T))
