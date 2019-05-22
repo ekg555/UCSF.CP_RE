@@ -23,17 +23,17 @@ dsktp <- 'c:/users/ekonagaya/desktop'
 projdir <- 'p:'
 dubsev <- 'q:'
 prmtsdir <- 'u:'
+# ------------------------------------------======
 wkdir <- file.path(dsktp, 'PATH2LINK')
 bindir <- file.path(wkdir, 'bin')
+# ------------------------------------------======
+if (!dir.exists(wkdir)) { dir.create(wkdir) }
+if (!dir.exists(bindir)) { dir.create(bindir) }
+# ------------------------------------------======
 
  timestp <- format(Sys.time(), "%Y-%m-%d.%H") # Time Stamp as Ousual
 
 outfile <- paste0('PATHs_', timestp)
-
-selDir <- gsub("\\\\", "/", choose.dir())
-# setwd(dubsev)
-# setwd(prmtsdir)
-setwd(selDir)
 
 # RegEx-es (EDIT if you DARE)
 # ============================================================================
@@ -41,15 +41,37 @@ setwd(selDir)
  avantSLSH <- "(^.*([/]+))"
 # ============================================================================
 
+selDir <- gsub("\\\\", "/", choose.dir("u:\\Construction Permits Issued\\"))
+# setwd(dubsev)
+# setwd(prmtsdir)
+
+setwd(selDir)
+
 # tic('Getting List')	# START time w/ tictoc
-FullPath <- sub(".", sub("([/]+)$", "", getwd()),
-					list.files(pattern="\\.pdf$", 
-						 recursive=T, 
-						 full.names=T,
-						 all.files=T,
-						 include.dirs=T,
-						 no.. = T)
-				)
+# FullPath <- sub(".", sub("([/]+)$", "", getwd()),
+					# list.files(pattern="\\.pdf$", 
+						 # recursive=T, 
+						 # full.names=T,
+						 # all.files=T,
+						 # include.dirs=T,
+						 # no.. = T)
+				# )
+
+
+#  CREATE THE MANIFEST (Win10)
+# ============================================================================
+system("cmd", intern=T, 
+		ignore.stdout=F, 
+		ignore.stderr=F, 
+		input="dir /B /S > asdfasdfasdf.txt")
+
+file.copy('asdfasdfasdf.txt', file.path(wkdir, 'asdfasdfasdf.txt'))
+file.remove('asdfasdfasdf.txt')
+
+setwd(wkdir)
+FullPath <- readLines('asdfasdfasdf.txt')
+FullPath <- gsub("\\\\", "/", FullPath)
+# ============================================================================
 
 # Replace "#" signs (for Access)
 FullPath <- gsub("#", "%23", FullPath)
