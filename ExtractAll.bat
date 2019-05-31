@@ -9,7 +9,6 @@ echo %mypath%
 
 set destpath=%mypath%\Signed_Docs\
 
-
 :string concat w/ spaces
 :set "nf=%mypath%\New Folder"
 :cd %nf%
@@ -22,9 +21,12 @@ forfiles /m *.zip /c "cmd /c PowerShell Expand-Archive -Force -Path 0x220x220x22
 
 cd %destpath%
 
-:REPLACE ("_" -> " ") & (".xls" -> "")
-: ----------------------------------------------------
+:REVERSE DocuSign Filename Processing.
+: ====================================================
 @echo off
+
+:REPLACE ("_" -> " ")
+: ----------------------------------------------------
 Setlocal enabledelayedexpansion
 
 Set "Pattern=_"
@@ -35,13 +37,42 @@ For %%a in (*.pdf) Do (
     Ren "%%a" "!File:%Pattern%=%Replace%!"
 )
 
-Set "Pattern=.xls"
-Set "Replace="
+:REPLACE (".pdf.pdf" -> ".pdf")
+: ----------------------------------------------------
+Setlocal enabledelayedexpansion
+
+Set "Pattern=.pdf.pdf"
+Set "Replace=.pdf"
 
 For %%a in (*.pdf) Do (
     Set "File=%%~a"
     Ren "%%a" "!File:%Pattern%=%Replace%!"
 )
+
+:REPLACE (".xls.pdf" -> ".pdf")
+: ----------------------------------------------------
+Setlocal enabledelayedexpansion
+
+Set "Pattern=.xls.pdf"
+Set "Replace=.pdf"
+
+For %%a in (*.pdf) Do (
+    Set "File=%%~a"
+    Ren "%%a" "!File:%Pattern%=%Replace%!"
+)
+
+:REPLACE (".xlsx.pdf" -> ".pdf")
+: ----------------------------------------------------
+Setlocal enabledelayedexpansion
+
+Set "Pattern=.xlsx.pdf"
+Set "Replace=.pdf"
+
+For %%a in (*.pdf) Do (
+    Set "File=%%~a"
+    Ren "%%a" "!File:%Pattern%=%Replace%!"
+)
+
 @echo on
 : -----------------------------------------------------
 del Summary.pdf
