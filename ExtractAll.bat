@@ -3,8 +3,9 @@
 set mypath=%cd%
 echo %mypath%
 
-IF NOT EXIST %mypath%\Signed_Docs\ (
-	mkdir Signed_Docs)
+:IF NOT EXIST %mypath%\Signed_Docs\ (
+:	mkdir Signed_Docs
+:)
 
 set destpath=%mypath%\Signed_Docs\
 
@@ -15,7 +16,8 @@ set destpath=%mypath%\Signed_Docs\
 :dir
 
 : EXTRACT ALL .ZIP to SIGNED-DOCS (OVERWRITES DUPLICATES)
-forfiles /m *.zip /c "cmd /c PowerShell Expand-Archive -Force -Path @path -DestinationPath %destpath%" 
+forfiles /m *.zip /c "cmd /c PowerShell Write-Host 0x220x220x22@path0x220x220x22"
+forfiles /m *.zip /c "cmd /c PowerShell Expand-Archive -Force -Path 0x220x220x22@path0x220x220x22 -DestinationPath Signed_Docs"
 : forfiles /s to recurse into subdir.
 
 cd %destpath%
