@@ -15,7 +15,7 @@ set destpath=%mypath%\Signed_Docs\
 :dir
 
 : EXTRACT ALL .ZIP to SIGNED-DOCS (OVERWRITES DUPLICATES)
-forfiles /m *.zip /c "cmd /c PowerShell Expand-Archive -Force -Path @path -DestinationPath %destpath%
+forfiles /m *.zip /c "cmd /c PowerShell Expand-Archive -Force -Path @path -DestinationPath %destpath%" 
 : forfiles /s to recurse into subdir.
 
 cd %destpath%
