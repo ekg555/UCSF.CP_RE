@@ -1,0 +1,3 @@
+UPDATE [Plan Review Log (R-Fix)] As PRLog, [EK CNO DECODED] As Decoded 
+SET PRLog.[Construction Type]=Decoded.CT, PRLog.[Number Levels]=Decoded.NL, PRLog.[Occupancy Classification]=Decoded.OC
+WHERE PRLog.[Seq ID] = Decoded.[Seq ID];
